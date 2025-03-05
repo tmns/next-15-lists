@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { SignInButton } from "@clerk/nextjs";
 
 export default function LandingPage() {
   return (
@@ -9,9 +9,9 @@ export default function LandingPage() {
         <p className="text-lg text-muted-foreground">
           That&apos;s it, nothing else.
         </p>
-        <Link href="/login" className={buttonVariants({ variant: "outline" })}>
-          Get Started
-        </Link>
+        <SignInButton mode="modal" fallbackRedirectUrl="/lists">
+          <Button variant="outline">Get Started</Button>
+        </SignInButton>
       </main>
     </div>
   );
