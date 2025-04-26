@@ -3,8 +3,8 @@ import { SignInButton } from "@clerk/nextjs";
 
 export default function LandingPage() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground p-4">
-      <main className="text-center space-y-6">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4 text-foreground">
+      <main className="space-y-6 text-center">
         <h1 className="text-4xl font-bold text-primary">Just Lists</h1>
         <p className="text-lg text-muted-foreground">
           That&apos;s it, nothing else.
