@@ -2,13 +2,26 @@
 
 import { getAuth } from "@/actions/utils";
 import { db } from "@/db";
+import { lists } from "@/db/schema";
+import { List } from "@/db/types";
+import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { cache } from "react";
 
-export async function getLists() {
+export const getLists = cache(async (): Promise<List[]> => {
   const { userId } = await getAuth();
 
-  const data = await db.query.lists.findMany({
+  const lists = await db.query.lists.findMany({
     where: (list, { eq }) => eq(list.ownerId, userId),
   });
 
-  return data;
-}
+  return lists;
+});
+
+export const deleteList = async (id: number) => {
+  const { userId } = await getAuth();
+
+  await db.delete(lists).where(eq(lists.ownerId, userId) && eq(lists.id, id));
+
+  revalidatePath("/lists");
+};

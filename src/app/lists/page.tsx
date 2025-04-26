@@ -1,3 +1,4 @@
+import { getLists } from "@/actions/listActions";
 import { AppSidebar } from "@/components/app-sidebar/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -6,10 +7,12 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
-export default function Page() {
+export default async function Page() {
+  const lists = await getLists();
+
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar lists={lists} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
