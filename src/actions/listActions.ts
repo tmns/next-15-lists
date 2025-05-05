@@ -13,20 +13,23 @@ export const getListsAction = cache(async (): Promise<List[]> => {
 
   const lists = await db.query.lists.findMany({
     where: (list, { eq }) => eq(list.ownerId, userId),
+    columns: { id: false },
   });
 
   return lists;
 });
 
-export const deleteListAction = async (id: number) => {
+export const deleteListAction = async (publicId: string) => {
   const { userId } = await getAuth();
 
-  await db.delete(lists).where(eq(lists.ownerId, userId) && eq(lists.id, id));
+  await db
+    .delete(lists)
+    .where(eq(lists.ownerId, userId) && eq(lists.publicId, publicId));
 
   revalidatePath("/lists");
 };
 
-export const editListAction = async (id: number, name: string) => {
+export const editListAction = async (publicId: string, name: string) => {
   const { userId } = await getAuth();
 
   if (!name) {
@@ -36,7 +39,7 @@ export const editListAction = async (id: number, name: string) => {
   await db
     .update(lists)
     .set({ name })
-    .where(eq(lists.ownerId, userId) && eq(lists.id, id));
+    .where(eq(lists.ownerId, userId) && eq(lists.publicId, publicId));
 
   revalidatePath("/lists");
 };

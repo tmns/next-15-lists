@@ -1,3 +1,3 @@
 import * as schema from "./schema";
 
-export type List = typeof schema.lists.$inferSelect;
+export type List = Omit<typeof schema.lists.$inferSelect, "id">;

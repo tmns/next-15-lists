@@ -16,12 +16,15 @@ export async function AppSidebarContent({ lists }: Props) {
   return (
     <SidebarContent className="px-3">
       <SidebarMenu>
-        {lists.map(({ id, name }) => (
-          <SidebarMenuItem key={id}>
+        {lists.map(({ publicId, name }) => (
+          <SidebarMenuItem key={publicId}>
             <SidebarMenuButton asChild>
-              <Link href={`/lists/${id}`}>{name}</Link>
+              <Link href={`/lists/${publicId}`}>
+                {/* `span` necessary here to ensure truncation works properly */}
+                <span>{name}</span>
+              </Link>
             </SidebarMenuButton>
-            <ListDropdown id={id} name={name} />
+            <ListDropdown id={publicId} name={name} />
           </SidebarMenuItem>
         ))}
       </SidebarMenu>
