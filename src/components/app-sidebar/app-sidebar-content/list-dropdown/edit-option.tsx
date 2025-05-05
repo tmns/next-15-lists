@@ -58,7 +58,7 @@ export function EditOption({ publicId, name, closeDropdown }: Props) {
     }
 
     lastOpenRef.current = open;
-  }, [open]);
+  }, [open, closeDropdown]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

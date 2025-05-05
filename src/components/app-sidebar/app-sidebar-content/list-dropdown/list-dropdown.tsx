@@ -11,14 +11,14 @@ import {
 import { SidebarMenuAction } from "@/components/ui/sidebar";
 import { List } from "@/db/types";
 import { MoreHorizontal } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 type Props = Pick<List, "publicId" | "name">;
 
 export function ListDropdown({ publicId, name }: Props) {
   const [open, setOpen] = useState(false);
 
-  const closeDropdown = () => setOpen(false);
+  const closeDropdown = useCallback(() => setOpen(false), []);
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>

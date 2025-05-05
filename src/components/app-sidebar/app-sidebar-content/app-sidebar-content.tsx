@@ -3,7 +3,6 @@ import { ListDropdown } from "@/components/app-sidebar/app-sidebar-content/list-
 import {
   SidebarContent,
   SidebarGroup,
-  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,

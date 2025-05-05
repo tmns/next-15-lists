@@ -53,7 +53,7 @@ export function DeleteOption({ publicId, closeDropdown }: Props) {
     }
 
     lastOpenRef.current = open;
-  }, [open]);
+  }, [open, closeDropdown]);
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
