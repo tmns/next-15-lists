@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
 
-export const getLists = cache(async (): Promise<List[]> => {
+export const getListsAction = cache(async (): Promise<List[]> => {
   const { userId } = await getAuth();
 
   const lists = await db.query.lists.findMany({
@@ -18,10 +18,25 @@ export const getLists = cache(async (): Promise<List[]> => {
   return lists;
 });
 
-export const deleteList = async (id: number) => {
+export const deleteListAction = async (id: number) => {
   const { userId } = await getAuth();
 
   await db.delete(lists).where(eq(lists.ownerId, userId) && eq(lists.id, id));
+
+  revalidatePath("/lists");
+};
+
+export const editListAction = async (id: number, name: string) => {
+  const { userId } = await getAuth();
+
+  if (!name) {
+    return;
+  }
+
+  await db
+    .update(lists)
+    .set({ name })
+    .where(eq(lists.ownerId, userId) && eq(lists.id, id));
 
   revalidatePath("/lists");
 };

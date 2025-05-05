@@ -1,0 +1,41 @@
+"use client";
+
+import { DeleteOption } from "@/components/app-sidebar/app-sidebar-content/list-dropdown/delete-option";
+import { EditOption } from "@/components/app-sidebar/app-sidebar-content/list-dropdown/edit-option";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { SidebarMenuAction } from "@/components/ui/sidebar";
+import { List } from "@/db/types";
+import { MoreHorizontal } from "lucide-react";
+import { useState } from "react";
+
+type Props = Pick<List, "id" | "name">;
+
+export function ListDropdown({ id, name }: Props) {
+  const [open, setOpen] = useState(false);
+
+  const closeDropdown = () => setOpen(false);
+
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <SidebarMenuAction
+          className="px-3 py-1 hover:cursor-pointer"
+          showOnHover
+        >
+          <MoreHorizontal />
+          <span className="sr-only">More</span>
+        </SidebarMenuAction>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56 rounded-lg" align="start">
+        <EditOption id={id} name={name} closeDropdown={closeDropdown} />
+        <DropdownMenuSeparator />
+        <DeleteOption id={id} closeDropdown={closeDropdown} />
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}

@@ -1,4 +1,4 @@
-import { getLists } from "@/actions/listActions";
+import { getListsAction } from "@/actions/listActions";
 import { AppSidebar } from "@/components/app-sidebar/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/sidebar";
 
 export default async function Page() {
-  const lists = await getLists();
+  const lists = await getListsAction();
 
   return (
     <SidebarProvider>

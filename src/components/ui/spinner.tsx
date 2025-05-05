@@ -1,11 +1,16 @@
 import { cn } from "@/lib/utils";
 
-export function Spinner() {
+interface Props {
+  className?: string;
+}
+
+export function Spinner({ className }: Props) {
   return (
     <span
       className={cn(
-        "inline-block h-3.5 w-3.5 animate-spin",
-        "rounded-full border border-current border-b-transparent"
+        "inline-block size-3 animate-spin",
+        "rounded-full border border-current border-b-transparent",
+        className
       )}
     />
   );

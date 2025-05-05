@@ -1,4 +1,4 @@
-import { ListDropdown } from "@/components/app-sidebar/app-sidebar-content/list-dropdown";
+import { ListDropdown } from "@/components/app-sidebar/app-sidebar-content/list-dropdown/list-dropdown";
 import {
   SidebarContent,
   SidebarMenu,
