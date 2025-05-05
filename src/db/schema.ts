@@ -9,7 +9,7 @@ export const lists = pgTable(
     publicId: varchar({ length: 12 })
       .notNull()
       .unique()
-      .default(generatePublicId()),
+      .$defaultFn(() => generatePublicId()),
     ownerId: varchar({ length: 255 }).notNull(),
     name: varchar({ length: 255 }).notNull().unique(),
     ...timestamps,
@@ -31,7 +31,7 @@ export const items = pgTable(
     publicId: varchar({ length: 12 })
       .notNull()
       .unique()
-      .default(generatePublicId()),
+      .$defaultFn(() => generatePublicId()),
     ownerId: varchar({ length: 255 }).notNull(),
     listId: integer("list_id").references(() => lists.id, {
       onDelete: "cascade",

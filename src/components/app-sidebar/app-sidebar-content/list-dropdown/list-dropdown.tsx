@@ -13,9 +13,9 @@ import { List } from "@/db/types";
 import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 
-type Props = Pick<List, "id" | "name">;
+type Props = Pick<List, "publicId" | "name">;
 
-export function ListDropdown({ id, name }: Props) {
+export function ListDropdown({ publicId, name }: Props) {
   const [open, setOpen] = useState(false);
 
   const closeDropdown = () => setOpen(false);
@@ -32,9 +32,13 @@ export function ListDropdown({ id, name }: Props) {
         </SidebarMenuAction>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 rounded-lg" align="start">
-        <EditOption id={id} name={name} closeDropdown={closeDropdown} />
+        <EditOption
+          publicId={publicId}
+          name={name}
+          closeDropdown={closeDropdown}
+        />
         <DropdownMenuSeparator />
-        <DeleteOption id={id} closeDropdown={closeDropdown} />
+        <DeleteOption publicId={publicId} closeDropdown={closeDropdown} />
       </DropdownMenuContent>
     </DropdownMenu>
   );

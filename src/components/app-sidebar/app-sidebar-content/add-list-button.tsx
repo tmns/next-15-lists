@@ -1,4 +1,6 @@
-import { editListAction } from "@/actions/listActions";
+"use client";
+
+import { createListAction } from "@/actions/listActions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,39 +13,32 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SidebarGroupAction } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
-import { List } from "@/db/types";
-import { Pencil } from "lucide-react";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { Plus } from "lucide-react";
+import { FormEvent, useState } from "react";
 
-interface Props extends Pick<List, "publicId" | "name"> {
-  closeDropdown: () => void;
-}
-
-export function EditOption({ publicId, name, closeDropdown }: Props) {
+export function AddListButton() {
   const [open, setOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
-  const lastOpenRef = useRef(open);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsPending(true);
 
     const target = e.target as typeof e.target & {
       listName: { value: string };
     };
-    const newName = target.listName.value;
+    const name = target.listName.value;
 
-    if (!newName || isPending) {
+    if (!name || isPending) {
       return;
     }
 
-    setIsPending(true);
-
     try {
-      await editListAction(publicId, newName);
+      await createListAction(name);
       setOpen(false);
     } catch (e) {
       console.log(e);
@@ -52,34 +47,25 @@ export function EditOption({ publicId, name, closeDropdown }: Props) {
     }
   };
 
-  useEffect(() => {
-    if (lastOpenRef.current && !open) {
-      closeDropdown();
-    }
-
-    lastOpenRef.current = open;
-  }, [open]);
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-          <Pencil className="size-3.5 text-muted-foreground" />
-          <span>Rename</span>
-        </DropdownMenuItem>
+        <SidebarGroupAction>
+          <Plus /> <span className="sr-only">Add List</span>
+        </SidebarGroupAction>
       </DialogTrigger>
       <DialogPortal>
         <DialogOverlay />
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit name</DialogTitle>
+            <DialogTitle>Create list</DialogTitle>
             <DialogDescription>
-              Enter a new name for your list and click save
+              Enter a name for your new list and click save
             </DialogDescription>
           </DialogHeader>
           <form className="flex flex-col gap-y-1.5" onSubmit={handleSubmit}>
             <Label htmlFor="listName">List name</Label>
-            <Input id="listName" name="listName" required defaultValue={name} />
+            <Input id="listName" name="listName" required />
             <DialogFooter>
               <Button
                 variant="secondary"

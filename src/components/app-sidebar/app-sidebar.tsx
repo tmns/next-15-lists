@@ -11,7 +11,7 @@ interface Props extends React.ComponentProps<typeof Sidebar> {
 
 export function AppSidebar({ lists, ...props }: Props) {
   return (
-    <Sidebar {...props}>
+    <Sidebar {...props} variant="inset">
       <AppSidebarHeader />
       <AppSidebarContent lists={lists} />
       <AppSidebarFooter />

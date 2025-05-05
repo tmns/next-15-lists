@@ -19,6 +19,18 @@ export const getListsAction = cache(async (): Promise<List[]> => {
   return lists;
 });
 
+export const createListAction = async (name: string) => {
+  const { userId } = await getAuth();
+
+  if (!name) {
+    return;
+  }
+
+  await db.insert(lists).values({ name, ownerId: userId });
+
+  revalidatePath("/lists");
+};
+
 export const deleteListAction = async (publicId: string) => {
   const { userId } = await getAuth();
 

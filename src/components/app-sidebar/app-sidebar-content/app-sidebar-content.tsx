@@ -1,6 +1,11 @@
+import { AddListButton } from "@/components/app-sidebar/app-sidebar-content/add-list-button";
 import { ListDropdown } from "@/components/app-sidebar/app-sidebar-content/list-dropdown/list-dropdown";
 import {
   SidebarContent,
+  SidebarGroup,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -14,19 +19,25 @@ interface Props {
 
 export async function AppSidebarContent({ lists }: Props) {
   return (
-    <SidebarContent className="px-3">
+    <SidebarContent>
       <SidebarMenu>
-        {lists.map(({ publicId, name }) => (
-          <SidebarMenuItem key={publicId}>
-            <SidebarMenuButton asChild>
-              <Link href={`/lists/${publicId}`}>
-                {/* `span` necessary here to ensure truncation works properly */}
-                <span>{name}</span>
-              </Link>
-            </SidebarMenuButton>
-            <ListDropdown id={publicId} name={name} />
-          </SidebarMenuItem>
-        ))}
+        <SidebarGroup>
+          <SidebarGroupLabel>All</SidebarGroupLabel>
+          <AddListButton />
+          <SidebarGroupContent>
+            {lists.map(({ publicId, name }) => (
+              <SidebarMenuItem key={publicId}>
+                <SidebarMenuButton asChild>
+                  <Link href={`/lists/${publicId}`}>
+                    {/* `span` necessary here to ensure truncation works properly */}
+                    <span>{name}</span>
+                  </Link>
+                </SidebarMenuButton>
+                <ListDropdown publicId={publicId} name={name} />
+              </SidebarMenuItem>
+            ))}
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarMenu>
     </SidebarContent>
   );

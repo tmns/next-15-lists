@@ -18,11 +18,11 @@ import { List } from "@/db/types";
 import { Trash2 } from "lucide-react";
 import { MouseEventHandler, useEffect, useRef, useState } from "react";
 
-interface Props extends Pick<List, "id"> {
+interface Props extends Pick<List, "publicId"> {
   closeDropdown: () => void;
 }
 
-export function DeleteOption({ id, closeDropdown }: Props) {
+export function DeleteOption({ publicId, closeDropdown }: Props) {
   const [open, setOpen] = useState(false);
   const lastOpenRef = useRef(open);
 
@@ -38,7 +38,7 @@ export function DeleteOption({ id, closeDropdown }: Props) {
     setIsPending(true);
 
     try {
-      await deleteListAction(id);
+      await deleteListAction(publicId);
       setOpen(false);
     } catch (error) {
       console.log(error);
