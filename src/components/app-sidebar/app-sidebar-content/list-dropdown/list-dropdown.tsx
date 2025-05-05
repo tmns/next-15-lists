@@ -23,15 +23,12 @@ export function ListDropdown({ publicId, name }: Props) {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <SidebarMenuAction
-          className="px-3 py-1 hover:cursor-pointer"
-          showOnHover
-        >
+        <SidebarMenuAction showOnHover>
           <MoreHorizontal />
           <span className="sr-only">More</span>
         </SidebarMenuAction>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 rounded-lg" align="start">
+      <DropdownMenuContent align="start">
         <EditOption
           publicId={publicId}
           name={name}

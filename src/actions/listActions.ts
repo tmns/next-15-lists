@@ -55,3 +55,17 @@ export const editListAction = async (publicId: string, name: string) => {
 
   revalidatePath("/lists");
 };
+
+export const getListAction = async (publicId: string) => {
+  const { userId } = await getAuth();
+
+  const list = await db.query.lists.findFirst({
+    where: (list, { eq }) =>
+      eq(list.ownerId, userId) && eq(list.publicId, publicId),
+    with: {
+      items: true,
+    },
+  });
+
+  return list;
+};
