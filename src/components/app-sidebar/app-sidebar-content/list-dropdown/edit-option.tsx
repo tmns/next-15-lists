@@ -16,8 +16,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { List } from "@/db/types";
+import { useDropdownClose } from "@/hooks/use-dropdown-close";
 import { Pencil } from "lucide-react";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
+import { toast } from "sonner";
 
 interface Props extends Pick<List, "publicId" | "name"> {
   closeDropdown: () => void;
@@ -26,7 +28,8 @@ interface Props extends Pick<List, "publicId" | "name"> {
 export function EditOption({ publicId, name, closeDropdown }: Props) {
   const [open, setOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
-  const lastOpenRef = useRef(open);
+
+  useDropdownClose({ open, closeDropdown });
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,20 +48,13 @@ export function EditOption({ publicId, name, closeDropdown }: Props) {
     try {
       await editListAction(publicId, newName);
       setOpen(false);
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to rename list");
     } finally {
       setIsPending(false);
     }
   };
-
-  useEffect(() => {
-    if (lastOpenRef.current && !open) {
-      closeDropdown();
-    }
-
-    lastOpenRef.current = open;
-  }, [open, closeDropdown]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

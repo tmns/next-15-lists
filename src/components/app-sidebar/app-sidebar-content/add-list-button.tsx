@@ -20,6 +20,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { toast } from "sonner";
 
 export function AddListButton() {
   const [open, setOpen] = useState(false);
@@ -43,8 +44,9 @@ export function AddListButton() {
       const publicId = await createListAction(name);
       setOpen(false);
       router.push(`/lists/${publicId}`);
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create list");
     } finally {
       setIsPending(false);
     }

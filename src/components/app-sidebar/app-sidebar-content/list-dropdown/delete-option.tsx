@@ -15,8 +15,10 @@ import {
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Spinner } from "@/components/ui/spinner";
 import { List } from "@/db/types";
+import { useDropdownClose } from "@/hooks/use-dropdown-close";
 import { Trash2 } from "lucide-react";
-import { MouseEventHandler, useEffect, useRef, useState } from "react";
+import { MouseEventHandler, useState } from "react";
+import { toast } from "sonner";
 
 interface Props extends Pick<List, "publicId"> {
   closeDropdown: () => void;
@@ -24,9 +26,9 @@ interface Props extends Pick<List, "publicId"> {
 
 export function DeleteOption({ publicId, closeDropdown }: Props) {
   const [open, setOpen] = useState(false);
-  const lastOpenRef = useRef(open);
-
   const [isDeletePending, setIsPending] = useState(false);
+
+  useDropdownClose({ open, closeDropdown });
 
   const deleteList: MouseEventHandler<HTMLButtonElement> = async (e) => {
     e.preventDefault();
@@ -41,19 +43,12 @@ export function DeleteOption({ publicId, closeDropdown }: Props) {
       await deleteListAction(publicId);
       setOpen(false);
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      toast.error("Failed to delete list");
     } finally {
       setIsPending(false);
     }
   };
-
-  useEffect(() => {
-    if (lastOpenRef.current && !open) {
-      closeDropdown();
-    }
-
-    lastOpenRef.current = open;
-  }, [open, closeDropdown]);
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
