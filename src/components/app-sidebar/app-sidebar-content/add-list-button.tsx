@@ -18,11 +18,13 @@ import { Label } from "@/components/ui/label";
 import { SidebarGroupAction } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 export function AddListButton() {
   const [open, setOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,8 +40,9 @@ export function AddListButton() {
     }
 
     try {
-      await createListAction(name);
+      const publicId = await createListAction(name);
       setOpen(false);
+      router.push(`/lists/${publicId}`);
     } catch (e) {
       console.log(e);
     } finally {

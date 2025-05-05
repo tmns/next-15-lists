@@ -14,6 +14,7 @@ export const getListsAction = cache(async (): Promise<List[]> => {
   const lists = await db.query.lists.findMany({
     where: (list, { eq }) => eq(list.ownerId, userId),
     columns: { id: false },
+    orderBy: (list, { asc }) => [asc(list.createdAt)],
   });
 
   return lists;
@@ -26,9 +27,14 @@ export const createListAction = async (name: string) => {
     return;
   }
 
-  await db.insert(lists).values({ name, ownerId: userId });
+  const result = await db
+    .insert(lists)
+    .values({ name, ownerId: userId })
+    .returning({ publicId: lists.publicId });
 
   revalidatePath("/lists");
+
+  return result[0].publicId;
 };
 
 export const deleteListAction = async (publicId: string) => {
@@ -62,6 +68,9 @@ export const getListAction = async (publicId: string) => {
   const list = await db.query.lists.findFirst({
     where: (list, { eq }) =>
       eq(list.ownerId, userId) && eq(list.publicId, publicId),
+    columns: {
+      id: false,
+    },
     with: {
       items: true,
     },
