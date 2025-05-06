@@ -5,13 +5,11 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ItemStatus } from "@/db/types";
-import { MoreHorizontal, CircleDot } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { useCallback } from "react";
 import { useState } from "react";
 

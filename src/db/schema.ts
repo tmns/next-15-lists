@@ -1,6 +1,6 @@
 import { generatePublicId, timestamps } from "@/db/columns.helpers";
 import { relations } from "drizzle-orm";
-import { integer, pgTable, varchar, boolean, index } from "drizzle-orm/pg-core";
+import { integer, pgTable, varchar, index } from "drizzle-orm/pg-core";
 
 export const lists = pgTable(
   "lists",

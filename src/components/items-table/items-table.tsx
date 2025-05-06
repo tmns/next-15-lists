@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -132,7 +132,7 @@ export function ItemsTable({ items, listPublicId }: Props) {
       {
         id: "actions",
         enableHiding: false,
-        cell: ({ row }) => {
+        cell: ({ row, table }) => {
           return (
             <div className="absolute top-1/2 right-3 -translate-y-1/2">
               <ItemDropdown

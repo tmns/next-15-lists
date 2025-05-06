@@ -47,7 +47,7 @@ export function AddItemButton({ listPublicId }: Props) {
     setIsPending(true);
 
     try {
-      const publicId = await createItemAction(listPublicId, itemTitle);
+      await createItemAction(listPublicId, itemTitle);
       setOpen(false);
     } catch (error) {
       console.error(error);
