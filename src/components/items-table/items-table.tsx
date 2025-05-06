@@ -29,6 +29,13 @@ import { Item } from "@/db/types";
 import { cn, snakeToTitleCase } from "@/lib/utils";
 import { ItemDropdown } from "@/components/items-table/item-dropdown/item-dropdown";
 import { AddItemButton } from "@/components/items-table/add-item-button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Props {
   items: Item[];
@@ -64,7 +71,24 @@ export function ItemsTable({ items, listPublicId }: Props) {
       },
       {
         accessorKey: "status",
-        header: "Status",
+        header: ({ column }) => {
+          return (
+            <div className="flex items-center gap-x-1">
+              Status
+              <Button
+                className={cn(
+                  "cursor-pointer bg-transparent px-1 hover:bg-transparent",
+                  "text-muted-foreground transition-colors hover:text-foreground"
+                )}
+                onClick={() =>
+                  column.toggleSorting(column.getIsSorted() === "asc")
+                }
+              >
+                <ArrowUpDown />
+              </Button>
+            </div>
+          );
+        },
         cell: ({ row }) => (
           <div className="capitalize">
             {snakeToTitleCase(row.getValue("status"))}
@@ -96,8 +120,8 @@ export function ItemsTable({ items, listPublicId }: Props) {
           return (
             <div
               className={cn(
-                "lowercase",
-                item.status === "done" && "line-through opacity-80"
+                "max-w-32 truncate lowercase sm:max-w-52 md:max-w-96",
+                item.status === "done" && "line-through opacity-60"
               )}
             >
               {row.getValue("title")}
@@ -115,6 +139,11 @@ export function ItemsTable({ items, listPublicId }: Props) {
                 listPublicId={listPublicId}
                 itemPublicIds={[row.original.publicId]}
                 title={row.original.title}
+                onDelete={() => {
+                  // If we don't do this, whichever rows end up taking the deleted row(s) place(s) will become selected.
+                  table.toggleAllRowsSelected(false);
+                }}
+                status={row.original.status}
               />
             </div>
           );
@@ -154,21 +183,54 @@ export function ItemsTable({ items, listPublicId }: Props) {
   return (
     <div className="w-full">
       <div className="flex items-center justify-between py-4">
-        <Input
-          placeholder="Filter items..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
         <div className="flex items-center gap-2">
-          {(table.getIsSomeRowsSelected() || table.getIsAllRowsSelected()) && (
+          <Input
+            placeholder="Filter items..."
+            value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("title")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+          <Select
+            value={
+              (table.getColumn("status")?.getFilterValue() as string) ?? ""
+            }
+            onValueChange={(value) => {
+              if (value === "all") {
+                table.getColumn("status")?.setFilterValue(undefined);
+              } else {
+                table.getColumn("status")?.setFilterValue(value);
+              }
+            }}
+          >
+            <SelectTrigger className="w-full sm:w-48">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="not_started">Not Started</SelectItem>
+              <SelectItem value="in_progress">In Progress</SelectItem>
+              <SelectItem value="done">Done</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center gap-2">
+          {table.getFilteredSelectedRowModel().rows.length > 1 && (
             <ItemDropdown
               listPublicId={listPublicId}
               itemPublicIds={table
                 .getFilteredSelectedRowModel()
                 .rows.map((row) => row.original.publicId)}
+              onDelete={() => {
+                // If we don't do this, whichever rows end up taking the deleted row(s) place(s) will become selected.
+                table.toggleAllRowsSelected(false);
+              }}
+              status={
+                table
+                  .getFilteredSelectedRowModel()
+                  .rows.map((row) => row.original.status)[0]
+              }
             />
           )}
           <AddItemButton listPublicId={listPublicId} />

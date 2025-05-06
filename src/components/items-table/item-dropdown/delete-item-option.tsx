@@ -1,4 +1,4 @@
-import { deleteListAction } from "@/actions/listActions";
+import { deleteItemAction } from "@/actions/itemActions";
 import {
   AlertDialog,
   AlertDialogFooter,
@@ -14,23 +14,30 @@ import {
 } from "@/components/ui/alert-dialog";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Spinner } from "@/components/ui/spinner";
-import { List } from "@/db/types";
 import { useDropdownClose } from "@/hooks/use-dropdown-close";
 import { Trash2 } from "lucide-react";
 import { MouseEventHandler, useState } from "react";
 import { toast } from "sonner";
 
-interface Props extends Pick<List, "publicId"> {
+interface Props {
   closeDropdown: () => void;
+  listPublicId: string;
+  itemPublicIds: string[];
+  onDelete: () => void;
 }
 
-export function DeleteListOption({ publicId, closeDropdown }: Props) {
+export function DeleteItemOption({
+  listPublicId,
+  itemPublicIds,
+  closeDropdown,
+  onDelete,
+}: Props) {
   const [open, setOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
   useDropdownClose({ open, closeDropdown });
 
-  const deleteList: MouseEventHandler<HTMLButtonElement> = async (e) => {
+  const deleteItem: MouseEventHandler<HTMLButtonElement> = async (e) => {
     e.preventDefault();
 
     if (isPending) {
@@ -40,11 +47,12 @@ export function DeleteListOption({ publicId, closeDropdown }: Props) {
     setIsPending(true);
 
     try {
-      await deleteListAction(publicId);
+      await deleteItemAction(listPublicId, itemPublicIds);
       setOpen(false);
+      onDelete();
     } catch (error) {
       console.error(error);
-      toast.error("Failed to delete list");
+      toast.error("Failed to delete item(s)");
     } finally {
       setIsPending(false);
     }
@@ -64,13 +72,13 @@ export function DeleteListOption({ publicId, closeDropdown }: Props) {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              list and its items from our servers.
+              This action cannot be undone. This will permanently delete the
+              selected item(s) from our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={deleteList} disabled={isPending}>
+            <AlertDialogAction onClick={deleteItem} disabled={isPending}>
               {isPending && <Spinner />} Delete
             </AlertDialogAction>
           </AlertDialogFooter>

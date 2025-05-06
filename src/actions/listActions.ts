@@ -12,7 +12,7 @@ export const getListsAction = cache(async (): Promise<List[]> => {
   const { userId } = await getAuth();
 
   const lists = await db.query.lists.findMany({
-    where: (list, { eq }) => eq(list.ownerId, userId),
+    where: (list) => eq(list.ownerId, userId),
     columns: { id: false },
     orderBy: (list, { asc }) => [asc(list.createdAt)],
   });
@@ -21,11 +21,11 @@ export const getListsAction = cache(async (): Promise<List[]> => {
 });
 
 export const createListAction = async (name: string) => {
-  const { userId } = await getAuth();
-
   if (!name) {
     throw new Error("Name is required");
   }
+
+  const { userId } = await getAuth();
 
   const result = await db
     .insert(lists)
@@ -48,11 +48,11 @@ export const deleteListAction = async (publicId: string) => {
 };
 
 export const editListAction = async (publicId: string, name: string) => {
-  const { userId } = await getAuth();
-
   if (!name) {
     throw new Error("Name is required");
   }
+
+  const { userId } = await getAuth();
 
   await db
     .update(lists)
@@ -66,13 +66,14 @@ export const getListAction = cache(async (publicId: string) => {
   const { userId } = await getAuth();
 
   const list = await db.query.lists.findFirst({
-    where: (list, { eq }) =>
-      eq(list.ownerId, userId) && eq(list.publicId, publicId),
+    where: (list) => eq(list.ownerId, userId) && eq(list.publicId, publicId),
     columns: {
       id: false,
     },
     with: {
-      items: true,
+      items: {
+        orderBy: (item, { asc }) => [asc(item.createdAt)],
+      },
     },
   });
 

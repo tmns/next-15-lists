@@ -1,3 +1,5 @@
+import { ChangeStatusOption } from "@/components/items-table/item-dropdown/change-status-option";
+import { DeleteItemOption } from "@/components/items-table/item-dropdown/delete-item-option";
 import { EditItemOption } from "@/components/items-table/item-dropdown/edit-item-option";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,7 +10,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
+import { ItemStatus } from "@/db/types";
+import { MoreHorizontal, CircleDot } from "lucide-react";
 import { useCallback } from "react";
 import { useState } from "react";
 
@@ -16,9 +19,17 @@ interface Props {
   listPublicId: string;
   itemPublicIds: string[];
   title?: string;
+  status: ItemStatus;
+  onDelete: () => void;
 }
 
-export function ItemDropdown({ listPublicId, itemPublicIds, title }: Props) {
+export function ItemDropdown({
+  listPublicId,
+  itemPublicIds,
+  title,
+  status,
+  onDelete,
+}: Props) {
   const [open, setOpen] = useState(false);
 
   const closeDropdown = useCallback(() => setOpen(false), []);
@@ -32,7 +43,12 @@ export function ItemDropdown({ listPublicId, itemPublicIds, title }: Props) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem>Change status</DropdownMenuItem>
+        <ChangeStatusOption
+          listPublicId={listPublicId}
+          itemPublicIds={itemPublicIds}
+          status={status}
+          closeDropdown={closeDropdown}
+        />
         {title && (
           <>
             <DropdownMenuSeparator />
@@ -45,7 +61,12 @@ export function ItemDropdown({ listPublicId, itemPublicIds, title }: Props) {
           </>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Delete</DropdownMenuItem>
+        <DeleteItemOption
+          listPublicId={listPublicId}
+          itemPublicIds={itemPublicIds}
+          closeDropdown={closeDropdown}
+          onDelete={onDelete}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );
