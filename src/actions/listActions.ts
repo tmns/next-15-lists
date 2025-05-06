@@ -24,7 +24,7 @@ export const createListAction = async (name: string) => {
   const { userId } = await getAuth();
 
   if (!name) {
-    return;
+    throw new Error("Name is required");
   }
 
   const result = await db
@@ -51,7 +51,7 @@ export const editListAction = async (publicId: string, name: string) => {
   const { userId } = await getAuth();
 
   if (!name) {
-    return;
+    throw new Error("Name is required");
   }
 
   await db
@@ -62,7 +62,7 @@ export const editListAction = async (publicId: string, name: string) => {
   revalidatePath("/lists");
 };
 
-export const getListAction = async (publicId: string) => {
+export const getListAction = cache(async (publicId: string) => {
   const { userId } = await getAuth();
 
   const list = await db.query.lists.findFirst({
@@ -77,4 +77,4 @@ export const getListAction = async (publicId: string) => {
   });
 
   return list;
-};
+});

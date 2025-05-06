@@ -37,7 +37,12 @@ export const items = pgTable(
       onDelete: "cascade",
     }),
     title: varchar({ length: 255 }).notNull().unique(),
-    isChecked: boolean().notNull().default(false),
+    status: varchar({
+      length: 32,
+      enum: ["not_started", "in_progress", "done"],
+    })
+      .notNull()
+      .default("not_started"),
     ...timestamps,
   },
   (table) => [

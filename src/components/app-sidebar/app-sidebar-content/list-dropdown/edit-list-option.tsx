@@ -1,6 +1,4 @@
-"use client";
-
-import { createListAction } from "@/actions/listActions";
+import { editListAction } from "@/actions/listActions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,19 +11,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SidebarGroupAction } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
-import { Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { List } from "@/db/types";
+import { useDropdownClose } from "@/hooks/use-dropdown-close";
+import { Pencil } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { toast } from "sonner";
 
-export function AddListButton() {
+interface Props extends Pick<List, "publicId" | "name"> {
+  closeDropdown: () => void;
+}
+
+export function EditListOption({ publicId, name, closeDropdown }: Props) {
   const [open, setOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
-  const router = useRouter();
+
+  useDropdownClose({ open, closeDropdown });
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,21 +37,20 @@ export function AddListButton() {
     const target = e.target as typeof e.target & {
       listName: { value: string };
     };
-    const name = target.listName.value;
+    const newName = target.listName.value;
 
-    if (!name || isPending) {
+    if (!newName || isPending) {
       return;
     }
 
     setIsPending(true);
 
     try {
-      const publicId = await createListAction(name);
+      await editListAction(publicId, newName);
       setOpen(false);
-      router.push(`/lists/${publicId}`);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to create list");
+      toast.error("Failed to rename list");
     } finally {
       setIsPending(false);
     }
@@ -56,22 +59,23 @@ export function AddListButton() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <SidebarGroupAction>
-          <Plus /> <span className="sr-only">Add List</span>
-        </SidebarGroupAction>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          <Pencil className="size-3.5 text-muted-foreground" />
+          <span>Rename</span>
+        </DropdownMenuItem>
       </DialogTrigger>
       <DialogPortal>
         <DialogOverlay />
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create list</DialogTitle>
+            <DialogTitle>Edit name</DialogTitle>
             <DialogDescription>
-              Enter a name for your new list and click save
+              Enter a new name for your list and click save
             </DialogDescription>
           </DialogHeader>
           <form className="flex flex-col gap-y-1.5" onSubmit={handleSubmit}>
             <Label htmlFor="listName">List name</Label>
-            <Input id="listName" name="listName" required />
+            <Input id="listName" name="listName" required defaultValue={name} />
             <DialogFooter>
               <Button
                 variant="secondary"

@@ -24,7 +24,7 @@ interface Props extends Pick<List, "publicId"> {
   closeDropdown: () => void;
 }
 
-export function DeleteOption({ publicId, closeDropdown }: Props) {
+export function DeleteListOption({ publicId, closeDropdown }: Props) {
   const [open, setOpen] = useState(false);
   const [isDeletePending, setIsPending] = useState(false);
 

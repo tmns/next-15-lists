@@ -1,7 +1,7 @@
 "use client";
 
-import { DeleteOption } from "@/components/app-sidebar/app-sidebar-content/list-dropdown/delete-option";
-import { EditOption } from "@/components/app-sidebar/app-sidebar-content/list-dropdown/edit-option";
+import { DeleteListOption } from "@/components/app-sidebar/app-sidebar-content/list-dropdown/delete-list-option";
+import { EditListOption } from "@/components/app-sidebar/app-sidebar-content/list-dropdown/edit-list-option";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,13 +29,13 @@ export function ListDropdown({ publicId, name }: Props) {
         </SidebarMenuAction>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
-        <EditOption
+        <EditListOption
           publicId={publicId}
           name={name}
           closeDropdown={closeDropdown}
         />
         <DropdownMenuSeparator />
-        <DeleteOption publicId={publicId} closeDropdown={closeDropdown} />
+        <DeleteListOption publicId={publicId} closeDropdown={closeDropdown} />
       </DropdownMenuContent>
     </DropdownMenu>
   );

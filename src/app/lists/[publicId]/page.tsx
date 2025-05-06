@@ -1,4 +1,5 @@
 import { getListAction } from "@/actions/listActions";
+import { ItemsTable } from "@/components/items-table/items-table";
 
 interface Props {
   params: Promise<{
@@ -15,5 +16,5 @@ export default async function Page({ params }: Props) {
     return <div>List not found</div>;
   }
 
-  return <div>{list.name}</div>;
+  return <ItemsTable items={list.items} listPublicId={list.publicId} />;
 }

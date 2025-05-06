@@ -1,4 +1,4 @@
-import { editListAction } from "@/actions/listActions";
+import { createItemAction } from "@/actions/itemActions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,46 +11,47 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
-import { List } from "@/db/types";
-import { useDropdownClose } from "@/hooks/use-dropdown-close";
-import { Pencil } from "lucide-react";
-import { FormEvent, useState } from "react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Label } from "@radix-ui/react-label";
+import { Plus } from "lucide-react";
+import { useState, FormEvent } from "react";
 import { toast } from "sonner";
 
-interface Props extends Pick<List, "publicId" | "name"> {
-  closeDropdown: () => void;
+interface Props {
+  listPublicId: string;
 }
 
-export function EditOption({ publicId, name, closeDropdown }: Props) {
+export function AddItemButton({ listPublicId }: Props) {
   const [open, setOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
-
-  useDropdownClose({ open, closeDropdown });
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const target = e.target as typeof e.target & {
-      listName: { value: string };
+      itemTitle: { value: string };
     };
-    const newName = target.listName.value;
+    const itemTitle = target.itemTitle.value;
 
-    if (!newName || isPending) {
+    if (!itemTitle || isPending) {
       return;
     }
 
     setIsPending(true);
 
     try {
-      await editListAction(publicId, newName);
+      const publicId = await createItemAction(listPublicId, itemTitle);
       setOpen(false);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to rename list");
+      toast.error("Failed to create item");
     } finally {
       setIsPending(false);
     }
@@ -58,24 +59,33 @@ export function EditOption({ publicId, name, closeDropdown }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-          <Pencil className="size-3.5 text-muted-foreground" />
-          <span>Rename</span>
-        </DropdownMenuItem>
-      </DialogTrigger>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="icon" className="cursor-pointer">
+                <Plus />
+              </Button>
+            </DialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent>Add item</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <DialogPortal>
         <DialogOverlay />
-        <DialogContent>
+        <DialogContent
+          // Necessary to prevent tooltip from appearing on close.
+          onCloseAutoFocus={(e) => e.preventDefault()}
+        >
           <DialogHeader>
-            <DialogTitle>Edit name</DialogTitle>
+            <DialogTitle>Create item</DialogTitle>
             <DialogDescription>
-              Enter a new name for your list and click save
+              Enter a title for your new item and click save
             </DialogDescription>
           </DialogHeader>
           <form className="flex flex-col gap-y-1.5" onSubmit={handleSubmit}>
-            <Label htmlFor="listName">List name</Label>
-            <Input id="listName" name="listName" required defaultValue={name} />
+            <Label htmlFor="itemTitle">Item title</Label>
+            <Input id="itemTitle" name="itemTitle" required />
             <DialogFooter>
               <Button
                 variant="secondary"
