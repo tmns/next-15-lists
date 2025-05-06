@@ -32,7 +32,7 @@ export async function AppSidebarContent({ lists }: Props) {
                     <span>{name}</span>
                   </Link>
                 </SidebarMenuButton>
-                <ListDropdown publicId={publicId} name={name} />
+                <ListDropdown publicId={publicId} name={name} lists={lists} />
               </SidebarMenuItem>
             ))}
           </SidebarGroupContent>

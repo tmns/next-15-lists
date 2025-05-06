@@ -13,9 +13,11 @@ import { List } from "@/db/types";
 import { MoreHorizontal } from "lucide-react";
 import { useCallback, useState } from "react";
 
-type Props = Pick<List, "publicId" | "name">;
+type Props = Pick<List, "publicId" | "name"> & {
+  lists: List[];
+};
 
-export function ListDropdown({ publicId, name }: Props) {
+export function ListDropdown({ publicId, name, lists }: Props) {
   const [open, setOpen] = useState(false);
 
   const closeDropdown = useCallback(() => setOpen(false), []);
@@ -35,7 +37,11 @@ export function ListDropdown({ publicId, name }: Props) {
           closeDropdown={closeDropdown}
         />
         <DropdownMenuSeparator />
-        <DeleteListOption publicId={publicId} closeDropdown={closeDropdown} />
+        <DeleteListOption
+          publicId={publicId}
+          closeDropdown={closeDropdown}
+          lists={lists}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );
