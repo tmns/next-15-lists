@@ -3,17 +3,18 @@ import { Sidebar, SidebarRail } from "@/components/ui/sidebar";
 import { AppSidebarFooter } from "@/components/app-sidebar/app-sidebar-footer";
 import { AppSidebarContent } from "@/components/app-sidebar/app-sidebar-content/app-sidebar-content";
 import { AppSidebarHeader } from "@/components/app-sidebar/app-sidebar-header";
-import { List } from "@/db/types";
+import { Preloaded } from "convex/react";
+import { api } from "convex-utils/api";
 
 interface Props extends React.ComponentProps<typeof Sidebar> {
-  lists: List[];
+  preloadedLists: Preloaded<typeof api.lists.findAll>;
 }
 
-export function AppSidebar({ lists, ...props }: Props) {
+export function AppSidebar({ preloadedLists, ...props }: Props) {
   return (
     <Sidebar {...props} variant="inset">
       <AppSidebarHeader />
-      <AppSidebarContent lists={lists} />
+      <AppSidebarContent preloadedLists={preloadedLists} />
       <AppSidebarFooter />
       <SidebarRail />
     </Sidebar>

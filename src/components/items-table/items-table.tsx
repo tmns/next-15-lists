@@ -25,7 +25,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Item } from "@/db/types";
 import { cn, snakeToTitleCase } from "@/lib/utils";
 import { ItemDropdown } from "@/components/items-table/item-dropdown/item-dropdown";
 import { AddItemButton } from "@/components/items-table/add-item-button";
@@ -36,13 +35,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Preloaded, usePreloadedQuery } from "convex/react";
+import { Item } from "@/db/types";
+import { api } from "convex-utils/api";
 
 interface Props {
-  items: Item[];
-  listPublicId: string;
+  preloadedItems: Preloaded<typeof api.items.findAll>;
 }
 
-export function ItemsTable({ items, listPublicId }: Props) {
+const listPublicId = "public-list-id";
+
+export function ItemsTable({ preloadedItems }: Props) {
+  const items = usePreloadedQuery(preloadedItems);
+
   const columns: ColumnDef<Item>[] = React.useMemo(
     () => [
       {
@@ -136,8 +141,7 @@ export function ItemsTable({ items, listPublicId }: Props) {
           return (
             <div className="absolute top-1/2 right-3 -translate-y-1/2">
               <ItemDropdown
-                listPublicId={listPublicId}
-                itemPublicIds={[row.original.publicId]}
+                itemPublicIds={[row.original._id]}
                 title={row.original.title}
                 onDelete={() => {
                   // If we don't do this, whichever rows end up taking the deleted row(s) place(s) will become selected.
@@ -221,7 +225,7 @@ export function ItemsTable({ items, listPublicId }: Props) {
               listPublicId={listPublicId}
               itemPublicIds={table
                 .getFilteredSelectedRowModel()
-                .rows.map((row) => row.original.publicId)}
+                .rows.map((row) => row.original._id)}
               onDelete={() => {
                 // If we don't do this, whichever rows end up taking the deleted row(s) place(s) will become selected.
                 table.toggleAllRowsSelected(false);

@@ -1,7 +1,6 @@
-import * as schema from "./schema";
+import { api } from "convex-utils/api";
 
-export type List = Omit<typeof schema.lists.$inferSelect, "id">;
+type Inner<T> = T extends (infer U)[] ? U : never;
 
-export type Item = Omit<typeof schema.items.$inferSelect, "id">;
-
-export type ItemStatus = "not_started" | "in_progress" | "done";
+export type List = Inner<typeof api.lists.findAll._returnType>;
+export type Item = Inner<typeof api.items.findAll._returnType>;

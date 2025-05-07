@@ -9,15 +9,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenuAction } from "@/components/ui/sidebar";
-import { List } from "@/db/types";
 import { MoreHorizontal } from "lucide-react";
 import { useCallback, useState } from "react";
+import { List } from "@/db/types";
 
-type Props = Pick<List, "publicId" | "name"> & {
+type Props = Pick<List, "_id" | "name"> & {
   lists: List[];
 };
 
-export function ListDropdown({ publicId, name, lists }: Props) {
+export function ListDropdown({ _id, name, lists }: Props) {
   const [open, setOpen] = useState(false);
 
   const closeDropdown = useCallback(() => setOpen(false), []);
@@ -31,14 +31,10 @@ export function ListDropdown({ publicId, name, lists }: Props) {
         </SidebarMenuAction>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
-        <EditListOption
-          publicId={publicId}
-          name={name}
-          closeDropdown={closeDropdown}
-        />
+        <EditListOption _id={_id} name={name} closeDropdown={closeDropdown} />
         <DropdownMenuSeparator />
         <DeleteListOption
-          publicId={publicId}
+          _id={_id}
           closeDropdown={closeDropdown}
           lists={lists}
         />

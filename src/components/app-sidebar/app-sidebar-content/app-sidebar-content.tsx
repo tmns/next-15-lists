@@ -1,3 +1,5 @@
+"use client";
+
 import { AddListButton } from "@/components/app-sidebar/app-sidebar-content/add-list-button";
 import { ListDropdown } from "@/components/app-sidebar/app-sidebar-content/list-dropdown/list-dropdown";
 import {
@@ -9,14 +11,17 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { List } from "@/db/types";
+import { api } from "convex-utils/api";
+import { Preloaded, usePreloadedQuery } from "convex/react";
 import Link from "next/link";
 
 interface Props {
-  lists: List[];
+  preloadedLists: Preloaded<typeof api.lists.findAll>;
 }
 
-export async function AppSidebarContent({ lists }: Props) {
+export function AppSidebarContent({ preloadedLists }: Props) {
+  const lists = usePreloadedQuery(preloadedLists);
+
   return (
     <SidebarContent>
       <SidebarMenu>
@@ -24,15 +29,15 @@ export async function AppSidebarContent({ lists }: Props) {
           <SidebarGroupLabel>All</SidebarGroupLabel>
           <AddListButton />
           <SidebarGroupContent>
-            {lists.map(({ publicId, name }) => (
-              <SidebarMenuItem key={publicId}>
+            {lists.map(({ _id, name }) => (
+              <SidebarMenuItem key={_id}>
                 <SidebarMenuButton asChild>
-                  <Link href={`/lists/${publicId}`}>
+                  <Link href={`/lists/${_id}`}>
                     {/* `span` necessary here to ensure truncation works properly */}
                     <span>{name}</span>
                   </Link>
                 </SidebarMenuButton>
-                <ListDropdown publicId={publicId} name={name} lists={lists} />
+                <ListDropdown _id={_id} name={name} lists={lists} />
               </SidebarMenuItem>
             ))}
           </SidebarGroupContent>

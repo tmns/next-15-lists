@@ -15,17 +15,17 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
-import { List } from "@/db/types";
 import { useDropdownClose } from "@/hooks/use-dropdown-close";
 import { Pencil } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { toast } from "sonner";
+import { List } from "@/db/types";
 
-interface Props extends Pick<List, "publicId" | "name"> {
+interface Props extends Pick<List, "_id" | "name"> {
   closeDropdown: () => void;
 }
 
-export function EditListOption({ publicId, name, closeDropdown }: Props) {
+export function EditListOption({ _id, name, closeDropdown }: Props) {
   const [open, setOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
@@ -46,7 +46,7 @@ export function EditListOption({ publicId, name, closeDropdown }: Props) {
     setIsPending(true);
 
     try {
-      await editListAction(publicId, newName);
+      await editListAction(_id, newName);
       setOpen(false);
     } catch (error) {
       console.error(error);

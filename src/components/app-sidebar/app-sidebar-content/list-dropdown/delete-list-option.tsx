@@ -14,19 +14,19 @@ import {
 } from "@/components/ui/alert-dialog";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Spinner } from "@/components/ui/spinner";
-import { List } from "@/db/types";
 import { useDropdownClose } from "@/hooks/use-dropdown-close";
 import { Trash2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { MouseEventHandler, useState } from "react";
 import { toast } from "sonner";
+import { List } from "@/db/types";
 
-interface Props extends Pick<List, "publicId"> {
+interface Props extends Pick<List, "_id"> {
   closeDropdown: () => void;
   lists: List[];
 }
 
-export function DeleteListOption({ publicId, closeDropdown, lists }: Props) {
+export function DeleteListOption({ _id, closeDropdown, lists }: Props) {
   const [open, setOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const router = useRouter();
@@ -46,16 +46,16 @@ export function DeleteListOption({ publicId, closeDropdown, lists }: Props) {
     const listsLength = lists.length;
 
     try {
-      await deleteListAction(publicId);
+      await deleteListAction(_id);
       setOpen(false);
 
       // If the list that's been deleted is the current list, we need to redirect
       // to the first list in the sidebar or the lists page if it was the only list.
-      if (pathname === `/lists/${publicId}`) {
+      if (pathname === `/lists/${_id}`) {
         if (listsLength === 1) {
           router.push("/lists");
         } else {
-          router.push(`/lists/${lists[0].publicId}`);
+          router.push(`/lists/${lists[0]._id}`);
         }
       }
     } catch (error) {
