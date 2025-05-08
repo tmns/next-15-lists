@@ -72,7 +72,6 @@ export function DeleteItemOption({
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteItem}>
-              <Trash2 className="size-3.5 text-muted-foreground" />
               <span>Delete</span>
             </AlertDialogAction>
           </AlertDialogFooter>

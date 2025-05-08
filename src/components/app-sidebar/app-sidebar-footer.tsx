@@ -10,7 +10,7 @@ export function AppSidebarFooter() {
   return (
     <SidebarFooter>
       <SidebarMenu>
-        <SidebarMenuItem className="flex p-2 hover:bg-sidebar-accent">
+        <SidebarMenuItem className="flex rounded-md p-2 hover:bg-sidebar-accent">
           <SidebarMenuButton size="lg" asChild>
             <UserButton
               showName
