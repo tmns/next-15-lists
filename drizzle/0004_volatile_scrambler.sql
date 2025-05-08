@@ -1,1 +1,0 @@
-ALTER TABLE "items" ADD COLUMN "status" varchar(32) DEFAULT 'not_started' NOT NULL;
