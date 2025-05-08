@@ -1,4 +1,3 @@
-import { editItemAction } from "@/actions/itemActions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,27 +13,28 @@ import {
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
+import { useUpdateItemMutation } from "@/hooks/mutations/items";
 import { useDropdownClose } from "@/hooks/use-dropdown-close";
+import { Id } from "convex-utils/dataModel";
 import { Pencil } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { toast } from "sonner";
 
 interface Props {
-  listPublicId: string;
+  listId: string;
   title: string;
-  itemPublicId: string;
+  itemId: string;
   closeDropdown: () => void;
 }
 
 export function EditItemOption({
-  listPublicId,
+  listId,
   title,
-  itemPublicId,
+  itemId,
   closeDropdown,
 }: Props) {
   const [open, setOpen] = useState(false);
-  const [isPending, setIsPending] = useState(false);
+  const updateItem = useUpdateItemMutation();
 
   useDropdownClose({ open, closeDropdown });
 
@@ -44,22 +44,23 @@ export function EditItemOption({
     const target = e.target as typeof e.target & {
       itemTitle: { value: string };
     };
-    const newName = target.itemTitle.value;
+    const newTitle = target.itemTitle.value;
 
-    if (!newName || isPending) {
+    if (!newTitle) {
       return;
     }
 
-    setIsPending(true);
+    setOpen(false);
 
     try {
-      await editItemAction(listPublicId, itemPublicId, newName);
-      setOpen(false);
+      await updateItem({
+        ids: [itemId as Id<"items">],
+        listId: listId as Id<"lists">,
+        update: { title: newTitle },
+      });
     } catch (error) {
       console.error(error);
       toast.error("Failed to rename item");
-    } finally {
-      setIsPending(false);
     }
   };
 
@@ -93,13 +94,10 @@ export function EditItemOption({
                 variant="secondary"
                 type="button"
                 onClick={() => setOpen(false)}
-                disabled={isPending}
               >
                 Cancel
               </Button>
-              <Button disabled={isPending}>
-                {isPending && <Spinner />} Save
-              </Button>
+              <Button>Save</Button>
             </DialogFooter>
           </form>
         </DialogContent>

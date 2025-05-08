@@ -1,6 +1,5 @@
 "use client";
 
-import { createListAction } from "@/actions/listActions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SidebarGroupAction } from "@/components/ui/sidebar";
-import { Spinner } from "@/components/ui/spinner";
+import { useAddListMutation } from "@/hooks/mutations/lists";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
@@ -24,8 +23,8 @@ import { toast } from "sonner";
 
 export function AddListButton() {
   const [open, setOpen] = useState(false);
-  const [isPending, setIsPending] = useState(false);
   const router = useRouter();
+  const addList = useAddListMutation();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -35,21 +34,18 @@ export function AddListButton() {
     };
     const name = target.listName.value;
 
-    if (!name || isPending) {
+    if (!name) {
       return;
     }
 
-    setIsPending(true);
+    setOpen(false);
 
     try {
-      const publicId = await createListAction(name);
-      setOpen(false);
-      router.push(`/lists/${publicId}`);
+      const newListId = await addList({ name });
+      router.push(`/lists/${newListId}`);
     } catch (error) {
       console.error(error);
       toast.error("Failed to create list");
-    } finally {
-      setIsPending(false);
     }
   };
 
@@ -77,13 +73,10 @@ export function AddListButton() {
                 variant="secondary"
                 type="button"
                 onClick={() => setOpen(false)}
-                disabled={isPending}
               >
                 Cancel
               </Button>
-              <Button disabled={isPending}>
-                {isPending && <Spinner />} Save
-              </Button>
+              <Button>Save</Button>
             </DialogFooter>
           </form>
         </DialogContent>

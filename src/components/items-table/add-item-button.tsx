@@ -1,4 +1,3 @@
-import { createItemAction } from "@/actions/itemActions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,25 +11,26 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useAddItemMutation } from "@/hooks/mutations/items";
 import { Label } from "@radix-ui/react-label";
+import { Id } from "convex-utils/dataModel";
 import { Plus } from "lucide-react";
 import { useState, FormEvent } from "react";
 import { toast } from "sonner";
 
 interface Props {
-  listPublicId: string;
+  listId: string;
 }
 
-export function AddItemButton({ listPublicId }: Props) {
+export function AddItemButton({ listId }: Props) {
   const [open, setOpen] = useState(false);
-  const [isPending, setIsPending] = useState(false);
+  const addItem = useAddItemMutation();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,20 +40,17 @@ export function AddItemButton({ listPublicId }: Props) {
     };
     const itemTitle = target.itemTitle.value;
 
-    if (!itemTitle || isPending) {
+    if (!itemTitle) {
       return;
     }
 
-    setIsPending(true);
+    setOpen(false);
 
     try {
-      await createItemAction(listPublicId, itemTitle);
-      setOpen(false);
+      await addItem({ title: itemTitle, listId: listId as Id<"lists"> });
     } catch (error) {
       console.error(error);
       toast.error("Failed to create item");
-    } finally {
-      setIsPending(false);
     }
   };
 
@@ -91,13 +88,10 @@ export function AddItemButton({ listPublicId }: Props) {
                 variant="secondary"
                 type="button"
                 onClick={() => setOpen(false)}
-                disabled={isPending}
               >
                 Cancel
               </Button>
-              <Button disabled={isPending}>
-                {isPending && <Spinner />} Save
-              </Button>
+              <Button>Save</Button>
             </DialogFooter>
           </form>
         </DialogContent>

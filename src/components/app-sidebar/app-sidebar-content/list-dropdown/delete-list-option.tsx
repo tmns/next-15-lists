@@ -1,4 +1,3 @@
-import { deleteListAction } from "@/actions/listActions";
 import {
   AlertDialog,
   AlertDialogFooter,
@@ -13,13 +12,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { Spinner } from "@/components/ui/spinner";
 import { useDropdownClose } from "@/hooks/use-dropdown-close";
 import { Trash2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { MouseEventHandler, useState } from "react";
 import { toast } from "sonner";
 import { List } from "@/db/types";
+import { useDeleteListMutation } from "@/hooks/mutations/lists";
 
 interface Props extends Pick<List, "_id"> {
   closeDropdown: () => void;
@@ -28,41 +27,32 @@ interface Props extends Pick<List, "_id"> {
 
 export function DeleteListOption({ _id, closeDropdown, lists }: Props) {
   const [open, setOpen] = useState(false);
-  const [isPending, setIsPending] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const deleteList = useDeleteListMutation();
 
   useDropdownClose({ open, closeDropdown });
 
-  const deleteList: MouseEventHandler<HTMLButtonElement> = async (e) => {
+  const handleDeleteList: MouseEventHandler<HTMLButtonElement> = async (e) => {
     e.preventDefault();
 
-    if (isPending) {
-      return;
+    setOpen(false);
+
+    // If the list that's been deleted is the current list, we need to redirect
+    // to the first list in the sidebar or the lists page if it was the only list.
+    if (pathname === `/lists/${_id}`) {
+      if (lists.length === 1) {
+        router.push("/lists");
+      } else {
+        router.push(`/lists/${lists[0]._id}`);
+      }
     }
 
-    setIsPending(true);
-
-    const listsLength = lists.length;
-
     try {
-      await deleteListAction(_id);
-      setOpen(false);
-
-      // If the list that's been deleted is the current list, we need to redirect
-      // to the first list in the sidebar or the lists page if it was the only list.
-      if (pathname === `/lists/${_id}`) {
-        if (listsLength === 1) {
-          router.push("/lists");
-        } else {
-          router.push(`/lists/${lists[0]._id}`);
-        }
-      }
+      await deleteList({ id: _id });
     } catch (error) {
       console.error(error);
       toast.error("Failed to delete list");
-    } finally {
-      setIsPending(false);
     }
   };
 
@@ -85,9 +75,9 @@ export function DeleteListOption({ _id, closeDropdown, lists }: Props) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={deleteList} disabled={isPending}>
-              {isPending && <Spinner />} Delete
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteList}>
+              Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

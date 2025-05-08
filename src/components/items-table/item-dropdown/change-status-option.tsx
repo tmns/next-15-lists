@@ -1,4 +1,3 @@
-import { changeItemStatusAction } from "@/actions/itemActions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,9 +18,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Spinner } from "@/components/ui/spinner";
 import { ItemStatus } from "@/db/types";
 import { useDropdownClose } from "@/hooks/use-dropdown-close";
+import { useUpdateItemMutation } from "@/hooks/mutations/items";
+import { Id } from "convex-utils/dataModel";
 import { Label } from "@radix-ui/react-label";
 import { CircleDot } from "lucide-react";
 import { useState } from "react";
@@ -29,43 +29,44 @@ import { toast } from "sonner";
 
 interface Props {
   closeDropdown: () => void;
-  listPublicId: string;
-  itemPublicIds: string[];
+  listId: string;
+  itemIds: string[];
   status: ItemStatus;
 }
 
 export function ChangeStatusOption({
   closeDropdown,
-  listPublicId,
-  itemPublicIds,
+  listId,
+  itemIds,
   status,
 }: Props) {
   const [open, setOpen] = useState(false);
-  const [isPending, setIsPending] = useState(false);
   const [newStatus, setNewStatus] = useState<string>(status);
 
   useDropdownClose({ open, closeDropdown });
 
+  const updateItem = useUpdateItemMutation();
+
   const handleSave = async () => {
     if (
-      isPending ||
       status === newStatus ||
       !["not_started", "in_progress", "done"].includes(newStatus)
     ) {
       return;
     }
 
-    setIsPending(true);
+    setOpen(false);
 
     try {
-      await changeItemStatusAction(listPublicId, itemPublicIds, newStatus);
-      setOpen(false);
+      await updateItem({
+        ids: itemIds as Id<"items">[],
+        listId: listId as Id<"lists">,
+        update: { status: newStatus as ItemStatus },
+      });
       closeDropdown();
     } catch (error) {
       console.error(error);
       toast.error("Failed to change status");
-    } finally {
-      setIsPending(false);
     }
   };
 
@@ -99,16 +100,10 @@ export function ChangeStatusOption({
               </SelectContent>
             </Select>
             <DialogFooter>
-              <Button
-                variant="secondary"
-                onClick={() => setOpen(false)}
-                disabled={isPending}
-              >
+              <Button variant="secondary" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button disabled={isPending} onClick={handleSave}>
-                {isPending && <Spinner />} Save
-              </Button>
+              <Button onClick={handleSave}>Save</Button>
             </DialogFooter>
           </div>
         </DialogContent>

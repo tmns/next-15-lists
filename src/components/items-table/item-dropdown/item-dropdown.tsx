@@ -9,21 +9,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ItemStatus } from "@/db/types";
+import { Id } from "convex-utils/dataModel";
 import { MoreHorizontal } from "lucide-react";
 import { useCallback } from "react";
 import { useState } from "react";
 
 interface Props {
-  listPublicId: string;
-  itemPublicIds: string[];
+  listId: Id<"lists">;
+  itemIds: string[];
   title?: string;
   status: ItemStatus;
   onDelete: () => void;
 }
 
 export function ItemDropdown({
-  listPublicId,
-  itemPublicIds,
+  listId,
+  itemIds,
   title,
   status,
   onDelete,
@@ -42,8 +43,8 @@ export function ItemDropdown({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <ChangeStatusOption
-          listPublicId={listPublicId}
-          itemPublicIds={itemPublicIds}
+          listId={listId}
+          itemIds={itemIds}
           status={status}
           closeDropdown={closeDropdown}
         />
@@ -51,17 +52,17 @@ export function ItemDropdown({
           <>
             <DropdownMenuSeparator />
             <EditItemOption
-              listPublicId={listPublicId}
+              listId={listId}
               title={title}
-              itemPublicId={itemPublicIds[0]}
+              itemId={itemIds[0]}
               closeDropdown={closeDropdown}
             />
           </>
         )}
         <DropdownMenuSeparator />
         <DeleteItemOption
-          listPublicId={listPublicId}
-          itemPublicIds={itemPublicIds}
+          listId={listId}
+          itemIds={itemIds}
           closeDropdown={closeDropdown}
           onDelete={onDelete}
         />

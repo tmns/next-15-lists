@@ -1,4 +1,3 @@
-import { deleteItemAction } from "@/actions/itemActions";
 import {
   AlertDialog,
   AlertDialogFooter,
@@ -13,48 +12,42 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { Spinner } from "@/components/ui/spinner";
+import { useDeleteItemMutation } from "@/hooks/mutations/items";
 import { useDropdownClose } from "@/hooks/use-dropdown-close";
+import { Id } from "convex-utils/dataModel";
 import { Trash2 } from "lucide-react";
 import { MouseEventHandler, useState } from "react";
 import { toast } from "sonner";
 
 interface Props {
   closeDropdown: () => void;
-  listPublicId: string;
-  itemPublicIds: string[];
+  listId: Id<"lists">;
+  itemIds: string[];
   onDelete: () => void;
 }
 
 export function DeleteItemOption({
-  listPublicId,
-  itemPublicIds,
+  listId,
+  itemIds,
   closeDropdown,
   onDelete,
 }: Props) {
   const [open, setOpen] = useState(false);
-  const [isPending, setIsPending] = useState(false);
+  const deleteItem = useDeleteItemMutation();
 
   useDropdownClose({ open, closeDropdown });
 
-  const deleteItem: MouseEventHandler<HTMLButtonElement> = async (e) => {
+  const handleDeleteItem: MouseEventHandler<HTMLButtonElement> = async (e) => {
     e.preventDefault();
 
-    if (isPending) {
-      return;
-    }
-
-    setIsPending(true);
+    setOpen(false);
 
     try {
-      await deleteItemAction(listPublicId, itemPublicIds);
-      setOpen(false);
+      await deleteItem({ ids: itemIds as Id<"items">[], listId });
       onDelete();
     } catch (error) {
       console.error(error);
       toast.error("Failed to delete item(s)");
-    } finally {
-      setIsPending(false);
     }
   };
 
@@ -77,9 +70,10 @@ export function DeleteItemOption({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={deleteItem} disabled={isPending}>
-              {isPending && <Spinner />} Delete
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteItem}>
+              <Trash2 className="size-3.5 text-muted-foreground" />
+              <span>Delete</span>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

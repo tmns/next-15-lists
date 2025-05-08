@@ -1,4 +1,3 @@
-import { getListAction } from "@/actions/listActions";
 import { AppMainContent } from "@/components/app-main-content";
 import { ItemsTable } from "@/components/items-table/items-table";
 import { preloadQuery } from "convex/nextjs";
@@ -24,10 +23,8 @@ export default async function Page({ params }: Props) {
   );
 
   return (
-    <AppMainContent
-    // listName={list?.name}
-    >
-      <ItemsTable preloadedItems={items} />
+    <AppMainContent>
+      <ItemsTable preloadedItems={items} listId={listId as Id<"lists">} />
     </AppMainContent>
   );
 }

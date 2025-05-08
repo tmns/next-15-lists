@@ -1,4 +1,3 @@
-import { editListAction } from "@/actions/listActions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,12 +13,12 @@ import {
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
 import { useDropdownClose } from "@/hooks/use-dropdown-close";
 import { Pencil } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { toast } from "sonner";
 import { List } from "@/db/types";
+import { useUpdateListMutation } from "@/hooks/mutations/lists";
 
 interface Props extends Pick<List, "_id" | "name"> {
   closeDropdown: () => void;
@@ -27,7 +26,8 @@ interface Props extends Pick<List, "_id" | "name"> {
 
 export function EditListOption({ _id, name, closeDropdown }: Props) {
   const [open, setOpen] = useState(false);
-  const [isPending, setIsPending] = useState(false);
+
+  const updateList = useUpdateListMutation();
 
   useDropdownClose({ open, closeDropdown });
 
@@ -39,20 +39,17 @@ export function EditListOption({ _id, name, closeDropdown }: Props) {
     };
     const newName = target.listName.value;
 
-    if (!newName || isPending) {
+    if (!newName) {
       return;
     }
 
-    setIsPending(true);
+    setOpen(false);
 
     try {
-      await editListAction(_id, newName);
-      setOpen(false);
+      await updateList({ id: _id, update: { name: newName } });
     } catch (error) {
       console.error(error);
       toast.error("Failed to rename list");
-    } finally {
-      setIsPending(false);
     }
   };
 
@@ -81,13 +78,10 @@ export function EditListOption({ _id, name, closeDropdown }: Props) {
                 variant="secondary"
                 type="button"
                 onClick={() => setOpen(false)}
-                disabled={isPending}
               >
                 Cancel
               </Button>
-              <Button disabled={isPending}>
-                {isPending && <Spinner />} Save
-              </Button>
+              <Button>Save</Button>
             </DialogFooter>
           </form>
         </DialogContent>

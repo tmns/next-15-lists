@@ -3,16 +3,15 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 
 interface Props {
   children: React.ReactNode;
-  listName?: string;
 }
 
-export function AppMainContent({ children, listName }: Props) {
+export function AppMainContent({ children }: Props) {
   return (
     <>
       <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 h-4" />
-        {listName ?? "Items"}
+        Items
       </header>
       <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
     </>

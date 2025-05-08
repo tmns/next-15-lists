@@ -38,14 +38,15 @@ import {
 import { Preloaded, usePreloadedQuery } from "convex/react";
 import { Item } from "@/db/types";
 import { api } from "convex-utils/api";
+import { OPTIMISTIC_ID } from "@/db/consts";
+import { Id } from "convex-utils/dataModel";
 
 interface Props {
+  listId: Id<"lists">;
   preloadedItems: Preloaded<typeof api.items.findAll>;
 }
 
-const listPublicId = "public-list-id";
-
-export function ItemsTable({ preloadedItems }: Props) {
+export function ItemsTable({ listId, preloadedItems }: Props) {
   const items = usePreloadedQuery(preloadedItems);
 
   const columns: ColumnDef<Item>[] = React.useMemo(
@@ -141,7 +142,8 @@ export function ItemsTable({ preloadedItems }: Props) {
           return (
             <div className="absolute top-1/2 right-3 -translate-y-1/2">
               <ItemDropdown
-                itemPublicIds={[row.original._id]}
+                listId={listId}
+                itemIds={[row.original._id]}
                 title={row.original.title}
                 onDelete={() => {
                   // If we don't do this, whichever rows end up taking the deleted row(s) place(s) will become selected.
@@ -154,7 +156,7 @@ export function ItemsTable({ preloadedItems }: Props) {
         },
       },
     ],
-    [listPublicId]
+    [listId]
   );
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -222,8 +224,8 @@ export function ItemsTable({ preloadedItems }: Props) {
         <div className="flex items-center gap-2">
           {table.getFilteredSelectedRowModel().rows.length > 1 && (
             <ItemDropdown
-              listPublicId={listPublicId}
-              itemPublicIds={table
+              listId={listId}
+              itemIds={table
                 .getFilteredSelectedRowModel()
                 .rows.map((row) => row.original._id)}
               onDelete={() => {
@@ -237,7 +239,7 @@ export function ItemsTable({ preloadedItems }: Props) {
               }
             />
           )}
-          <AddItemButton listPublicId={listPublicId} />
+          <AddItemButton listId={listId} />
         </div>
       </div>
       <div className="rounded-md border">
@@ -266,6 +268,11 @@ export function ItemsTable({ preloadedItems }: Props) {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className={
+                    row.original._id === OPTIMISTIC_ID
+                      ? "pointer-events-none animate-pulse"
+                      : undefined
+                  }
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
