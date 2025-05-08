@@ -7,7 +7,7 @@ export const findAll = query({
     const identity = await ctx.auth.getUserIdentity();
 
     if (!identity) {
-      throw new Error("Unauthorized");
+      return [];
     }
 
     return await ctx.db
@@ -24,7 +24,7 @@ export const add = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (!identity) {
-      throw new Error("Unauthorized");
+      return null;
     }
 
     return await ctx.db.insert("lists", {
@@ -45,7 +45,7 @@ export const update = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (!identity) {
-      throw new Error("Unauthorized");
+      return;
     }
 
     const list = await ctx.db.get(id);
@@ -64,7 +64,7 @@ export const remove = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (!identity) {
-      throw new Error("Unauthorized");
+      return;
     }
 
     const list = await ctx.db.get(id);
